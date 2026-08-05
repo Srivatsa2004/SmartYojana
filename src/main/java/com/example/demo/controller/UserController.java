@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
 public class UserController {

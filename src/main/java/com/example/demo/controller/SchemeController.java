@@ -12,7 +12,7 @@ import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = "*") 
 @RestController
 @RequestMapping("/schemes")
 public class SchemeController {

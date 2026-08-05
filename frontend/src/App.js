@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+
 function App() {
   const [form, setForm] = useState({
     age: "",
@@ -21,7 +23,7 @@ function App() {
     setLoading(true);
     setResult(null);
     try {
-      const response = await fetch("http://localhost:8080/schemes/recommend", {
+      const response = await fetch(`${API_BASE_URL}/schemes/recommend`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -14,7 +14,8 @@ public class MLService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String ML_API_URL = "http://localhost:5001/predict";
+    @org.springframework.beans.factory.annotation.Value("${ml.api.url:http://localhost:5001/predict}")
+    private String mlApiUrl;
 
     public String getPrediction(User user) {
 
@@ -26,7 +27,7 @@ public class MLService {
         request.put("state", user.getState());
 
         ResponseEntity<Map> response =
-                restTemplate.postForEntity(ML_API_URL, request, Map.class);
+                restTemplate.postForEntity(mlApiUrl, request, Map.class);
 
         return (String) response.getBody().get("scheme");
     }
