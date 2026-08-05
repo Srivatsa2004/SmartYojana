@@ -1,0 +1,9 @@
+your-project/
+│
+├── pom.xml          ✅ (HERE)
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   │       └── application.properties
+│   └── test/

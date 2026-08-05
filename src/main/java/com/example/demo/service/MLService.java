@@ -14,7 +14,7 @@ public class MLService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String ML_API_URL = "http://localhost:5000/predict";
+    private final String ML_API_URL = "http://localhost:5001/predict";
 
     public String getPrediction(User user) {
 

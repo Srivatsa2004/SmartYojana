@@ -92,7 +92,7 @@ public class Scheme {
     public void setEligibility(String eligibility){
         this.eligibility=eligibility;
     }
-    public String getElibility(){
+    public String getEligibility(){
         return eligibility;
     }
 }

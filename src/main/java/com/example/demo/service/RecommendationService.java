@@ -23,10 +23,13 @@ public class RecommendationService {
 
         String predictedScheme = mlService.getPrediction(user);
         
-
         List<Scheme> result = new ArrayList<>();
 
-        Optional<Scheme> schemeOpt = schemeRepository.findById(predictedScheme);
+        if (predictedScheme == null || predictedScheme.isEmpty()) {
+            return result; // Empty result if ML model found no relevant match
+        }
+
+        Optional<Scheme> schemeOpt = schemeRepository.findBySchemeName(predictedScheme);
 
         if (schemeOpt.isPresent()) {
             Scheme scheme = schemeOpt.get();

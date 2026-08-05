@@ -1,45 +1,52 @@
+import requests
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 
-# Step 1: Load dataset
-df = pd.read_excel("schemes_dataset_50.xlsx")
-print("Columns:", df.columns.tolist())
+def main():
+    print("Fetching schemes from backend for NLP training...")
+    try:
+        response = requests.get('http://localhost:8080/schemes')
+        schemes_data = response.json()
+    except Exception as e:
+        print("Error fetching schemes:", e)
+        return
 
-#print("Columns:", df.columns)
-print(df.head())
+    if not schemes_data:
+        print("No schemes found in DB.")
+        return
 
-# Step 2: Encode categorical columns
-label_encoders = {}
+    print(f"Found {len(schemes_data)} schemes. Building corpus...")
 
-categorical_cols = ['age','occupation', 'category', 'state', 'scheme']
+    corpus = []
+    scheme_names = []
 
-for col in categorical_cols:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col])
-    label_encoders[col] = le
+    for s in schemes_data:
+        # Combine text fields to form a rich semantic document
+        name = s.get('schemeName', '')
+        desc = s.get('description', '')
+        benefit = s.get('benefit', '')
+        eligibility = s.get('eligibility', '')
+        category = s.get('category', '')
+        
+        # Give extra weight to category and eligibility by repeating them
+        document = f"{name} {desc} {benefit} {eligibility} {eligibility} {category} {category}"
+        corpus.append(document.lower())
+        scheme_names.append(name)
 
-# Step 3: Features (X) and Target (y)
-X = df[['age', 'income', 'occupation', 'category', 'state']]
-y = df['scheme']
+    print("Training TF-IDF Vectorizer...")
+    vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+    tfidf_matrix = vectorizer.fit_transform(corpus)
 
-# Step 4: Split data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+    # Save the NLP model components
+    import os
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    joblib.dump(vectorizer, os.path.join(BASE_DIR, 'tfidf_vectorizer.pkl'))
+    joblib.dump(tfidf_matrix, os.path.join(BASE_DIR, 'tfidf_matrix.pkl'))
+    joblib.dump(scheme_names, os.path.join(BASE_DIR, 'scheme_names.pkl'))
 
-# Step 5: Train Random Forest
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+    print("NLP Model trained and saved successfully!")
 
-# Step 6: Accuracy
-accuracy = model.score(X_test, y_test)
-print("Model Accuracy:", accuracy)
-
-# Step 7: Save model + encoders
-joblib.dump(model, "model.pkl")
-joblib.dump(label_encoders, "encoders.pkl")
-
-print("Model and encoders saved successfully!")
+if __name__ == "__main__":
+    main()

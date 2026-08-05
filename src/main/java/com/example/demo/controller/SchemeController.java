@@ -48,7 +48,7 @@ public class SchemeController {
     }
     @PostMapping("/recommend")
     public List<Scheme> recommendSchemes(@RequestBody User user) {
-        return schemeService.getRecommendedSchemes(user);
+        return recommendationService.getRecommendedSchemes(user);
     }
     @Autowired
     private RecommendationService recommendationService;

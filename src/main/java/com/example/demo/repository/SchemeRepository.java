@@ -14,4 +14,5 @@ public interface SchemeRepository extends MongoRepository<Scheme, String>{
 
     List<Scheme> findByMaxIncomeLessThanEqual(double income);
     
+    java.util.Optional<Scheme> findBySchemeName(String schemeName);
 }
