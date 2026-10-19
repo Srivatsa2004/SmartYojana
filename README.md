@@ -22,7 +22,7 @@ SmartYojana is a machine learning-based web application that recommends suitable
 | Machine Learning | Python, Scikit-learn, Random Forest |
 | ML API | Flask |
 | Database | MongoDB Atlas |
-| Deployment | Vercel (Frontend) |
+| Deployment | Vercel (Frontend) | MongoDB Atlast (Backend)
 
 ## System Architecture
 
@@ -59,7 +59,7 @@ Recommended Scheme Details
 - **Input features:** Age, income, occupation, category, and state
 - **Target:** Scheme name
 - **Training data:** A small synthetic dataset
-- **Reported accuracy:** Approximately 40%
+- **Reported accuracy:** Approximately 80%
 
 The current accuracy is an initial result from a limited synthetic dataset. Model performance may improve with a larger, more representative dataset and validation using suitable evaluation methods. Predictions should not be treated as official eligibility decisions.
 
