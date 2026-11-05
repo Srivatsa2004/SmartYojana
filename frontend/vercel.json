@@ -1,6 +1,11 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
+  "build": {
+    "env": {
+      "REACT_APP_API_BASE_URL": "https://smart-yojana-backend.onrender.com"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
