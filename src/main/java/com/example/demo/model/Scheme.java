@@ -1,7 +1,7 @@
 package com.example.demo.model;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 
 @Document(collection = "schemes")
 public class Scheme {
@@ -18,26 +18,38 @@ public class Scheme {
     private String state;
     private String benefit;
     private String eligibility;
-            
 
-    public String getId(){
+    public Scheme() {
+    }
+
+    public String getId() {
         return id;
     }
-    public void setId(String id){
+
+    public void setId(String id) {
         this.id = id;
     }
-    public String getSchemeName(){
+
+    public String getSchemeName() {
         return schemeName;
     }
-    public void setSchemeName(String schemeName){
+
+    public void setSchemeName(String schemeName) {
         this.schemeName = schemeName;
     }
-    public void setDescription(String description ){
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
     }
-    public int getMinAge(){
+
+    public int getMinAge() {
         return minAge;
     }
+
     public void setMinAge(int minAge) {
         this.minAge = minAge;
     }
@@ -89,12 +101,12 @@ public class Scheme {
     public void setBenefit(String benefit) {
         this.benefit = benefit;
     }
-    public void setEligibility(String eligibility){
-        this.eligibility=eligibility;
-    }
-    public String getEligibility(){
+
+    public String getEligibility() {
         return eligibility;
     }
-}
-    
 
+    public void setEligibility(String eligibility) {
+        this.eligibility = eligibility;
+    }
+}

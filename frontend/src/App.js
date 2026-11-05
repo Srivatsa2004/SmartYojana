@@ -14,14 +14,25 @@ function App() {
 
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
 
   const getRecommendation = async () => {
+    if (!form.age || !form.income) {
+      setErrorMessage("Please enter your age and annual income.");
+      return;
+    }
+
     setLoading(true);
     setResult(null);
+    setErrorMessage("");
+
     try {
       const response = await fetch(`${API_BASE_URL}/schemes/recommend`, {
         method: "POST",
@@ -37,11 +48,16 @@ function App() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
+      }
+
       const data = await response.json();
       setResult(data);
     } catch (error) {
       console.error("Error:", error);
-      setResult([]); // Treat as empty result on error
+      setErrorMessage("Unable to connect to the recommendation server. Please make sure the backend is running.");
+      setResult([]);
     } finally {
       setLoading(false);
     }
@@ -56,17 +72,29 @@ function App() {
         <div className="form-grid">
           <div className="input-group">
             <label>Age</label>
-            <input type="number" name="age" placeholder="e.g. 25" onChange={handleChange} />
+            <input
+              type="number"
+              name="age"
+              value={form.age}
+              placeholder="e.g. 25"
+              onChange={handleChange}
+            />
           </div>
 
           <div className="input-group">
             <label>Annual Income (₹)</label>
-            <input type="number" name="income" placeholder="e.g. 200000" onChange={handleChange} />
+            <input
+              type="number"
+              name="income"
+              value={form.income}
+              placeholder="e.g. 200000"
+              onChange={handleChange}
+            />
           </div>
 
           <div className="input-group">
             <label>Occupation</label>
-            <select name="occupation" onChange={handleChange}>
+            <select name="occupation" value={form.occupation} onChange={handleChange}>
               <option>Farmer</option>
               <option>Student</option>
               <option>Business</option>
@@ -80,7 +108,7 @@ function App() {
 
           <div className="input-group">
             <label>Category</label>
-            <select name="category" onChange={handleChange}>
+            <select name="category" value={form.category} onChange={handleChange}>
               <option>OBC</option>
               <option>SC</option>
               <option>ST</option>
@@ -90,9 +118,21 @@ function App() {
 
           <div className="input-group full-width">
             <label>State</label>
-            <input type="text" name="state" placeholder="e.g. Karnataka" onChange={handleChange} />
+            <input
+              type="text"
+              name="state"
+              value={form.state}
+              placeholder="e.g. Karnataka"
+              onChange={handleChange}
+            />
           </div>
         </div>
+
+        {errorMessage && (
+          <div className="form-error-banner">
+            ⚠️ {errorMessage}
+          </div>
+        )}
 
         <button className="primary-btn" onClick={getRecommendation} disabled={loading}>
           {loading ? <span className="spinner"></span> : "Get Recommendation"}
@@ -105,7 +145,7 @@ function App() {
             </div>
             <div className="result-body">
               <h4 className="scheme-name">{result[0]?.schemeName}</h4>
-              <p className="scheme-desc">{result[0]?.description}</p>
+              <p className="scheme-desc">{result[0]?.description || "No detailed description available."}</p>
               
               <div className="benefit-section">
                 <strong>Key Benefits:</strong>
@@ -114,13 +154,13 @@ function App() {
 
               <div className="eligibility-section">
                 <strong>Eligibility Criteria:</strong>
-                <p>{result[0]?.eligibility}</p>
+                <p>{result[0]?.eligibility || "Standard eligibility rules apply."}</p>
               </div>
             </div>
           </div>
         )}
 
-        {result && result.length === 0 && (
+        {result && result.length === 0 && !errorMessage && (
           <div className="error-card fade-in">
             <div className="icon">⚠️</div>
             <h4>No matching schemes found</h4>

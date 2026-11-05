@@ -1,0 +1,40 @@
+services:
+  # 1. Python Flask ML Service
+  - type: web
+    name: smart-yojana-ml
+    env: python
+    rootDir: ml_service
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 2. Spring Boot Java Backend (Dockerized)
+  - type: web
+    name: smart-yojana-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ML_API_URL
+        value: https://smart-yojana-ml.onrender.com/predict
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb+srv://mrudangamvatsa%40gmail.com:Sri%402004@cluster0.xpmpdig.mongodb.net/scheme_db?retryWrites=true&w=majority&appName=Cluster0
+
+  # 3. React Frontend (Static Site)
+  - type: static
+    name: smart-yojana-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: build
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://smart-yojana-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

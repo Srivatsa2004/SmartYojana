@@ -16,7 +16,8 @@ public class User {
     private String category;
     private String state;
 
-    // ✅ VERY IMPORTANT: getters and setters
+    public User() {
+    }
 
     public String getId() {
         return id;
