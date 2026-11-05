@@ -14,6 +14,7 @@ function App() {
 
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Get Recommendation");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
@@ -32,6 +33,11 @@ function App() {
     setLoading(true);
     setResult(null);
     setErrorMessage("");
+    setLoadingText("Finding best schemes...");
+
+    const slowNoticeTimer = setTimeout(() => {
+      setLoadingText("Server is waking up (free tier cold start, ~20s)...");
+    }, 3500);
 
     try {
       const response = await fetch(`${API_BASE_URL}/schemes/recommend`, {
@@ -56,10 +62,14 @@ function App() {
       setResult(data);
     } catch (error) {
       console.error("Error:", error);
-      setErrorMessage("Unable to connect to the recommendation server. Please make sure the backend is running.");
+      setErrorMessage(
+        "Could not reach the recommendation server. If the server was sleeping (Render free tier), it has just been woken up! Please click 'Get Recommendation' again."
+      );
       setResult([]);
     } finally {
+      clearTimeout(slowNoticeTimer);
       setLoading(false);
+      setLoadingText("Get Recommendation");
     }
   };
 
@@ -135,7 +145,14 @@ function App() {
         )}
 
         <button className="primary-btn" onClick={getRecommendation} disabled={loading}>
-          {loading ? <span className="spinner"></span> : "Get Recommendation"}
+          {loading ? (
+            <>
+              <span className="spinner" style={{ marginRight: "10px" }}></span>
+              <span>{loadingText}</span>
+            </>
+          ) : (
+            "Get Recommendation"
+          )}
         </button>
 
         {result && result.length > 0 && (
